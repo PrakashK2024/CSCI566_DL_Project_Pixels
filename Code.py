@@ -3,7 +3,7 @@ from PIL import Image
 import time
 
 st.title("👥 Team Name: Pixels")
-st.header("📸 Project Title: Image Insights Detection using Multimodal Transformers")
+st.header("📸 Project Title: Interactive Web App for Image & Audio Insights with Transformers")
 
 if "saved_image" not in st.session_state:
     st.session_state.saved_image = None
