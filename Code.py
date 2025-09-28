@@ -6,9 +6,9 @@ import tempfile
 import speech_recognition as sr
 
 st.title("👥 Team Name: Pixels")
-st.header("📸 Project Title: Interactive Web App for Image & Audio Insights with Transformers")
+st.header("📸 PixelSense: Multimodal Transformer Framework for Interactive Image Understanding")
 
-# Create a temp directory for session images
+
 if "temp_dir" not in st.session_state:
     st.session_state.temp_dir = tempfile.mkdtemp()
 
@@ -21,6 +21,14 @@ if "option" not in st.session_state:
 if "transcribed_text" not in st.session_state:
     st.session_state.transcribed_text = ""
 
+if "recognizer" not in st.session_state:
+    st.session_state.recognizer = sr.Recognizer()
+
+
+if "mic_ready" not in st.session_state:
+    with sr.Microphone() as source:
+        st.session_state.recognizer.adjust_for_ambient_noise(source, duration=0.2)
+    st.session_state.mic_ready = True
 
 def process_and_save_image(img):
     progress = st.progress(0)
@@ -37,7 +45,6 @@ def process_and_save_image(img):
 
     status_text.text("✅ Image securely saved for this session!")
     progress.empty()
-
 
 def reset_input():
     if st.session_state.saved_image_path and os.path.exists(st.session_state.saved_image_path):
@@ -58,6 +65,7 @@ if st.session_state.option is None and st.session_state.saved_image is None:
     else:
         st.stop()
 
+
 if st.session_state.option == "Upload Image" and st.session_state.saved_image is None:
     uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if uploaded_file:
@@ -71,6 +79,7 @@ if st.session_state.option == "Upload Image" and st.session_state.saved_image is
         with col2:
             if st.button("🔄 Retake / Reupload"):
                 reset_input()
+
 
 if st.session_state.option == "Capture via Camera" and st.session_state.saved_image is None:
     captured_file = st.camera_input("Take a picture")
@@ -86,42 +95,38 @@ if st.session_state.option == "Capture via Camera" and st.session_state.saved_im
             if st.button("🔄 Retake"):
                 reset_input()
 
+
 if st.session_state.saved_image is not None:
     st.subheader("✅ Final Saved Image")
     st.image(st.session_state.saved_image, width="stretch")
 
-    # Multimodal input
     st.subheader("🎙️ Text + Audio Input")
-
     col1, col2 = st.columns([2, 1])
 
+    # --- Text input ---
     with col1:
         user_text = st.text_input(
             "💬 Enter your query here:",
             value=st.session_state.transcribed_text,
             key="text_input"
         )
-
-        # New button to clear just the text field
         if st.button("🧹 Clear Text"):
             st.session_state.transcribed_text = ""
             st.rerun()
 
+    # --- Audio input ---
     with col2:
         st.write("🎤 Click below to speak:")
         if st.button("🎙️ Speak now"):
-            r = sr.Recognizer()
+            r = st.session_state.recognizer
+            # Initialize microphone locally (do NOT store in session state)
             with sr.Microphone() as source:
                 st.info("Listening...")
                 audio = r.listen(source)
             try:
                 text = r.recognize_google(audio)
-                # Append new speech to existing text
                 existing = st.session_state.transcribed_text
-                if existing:
-                    st.session_state.transcribed_text = existing + " " + text
-                else:
-                    st.session_state.transcribed_text = text
+                st.session_state.transcribed_text = (existing + " " + text) if existing else text
                 st.success(f"You said: {text}")
                 st.rerun()
             except sr.UnknownValueError:
