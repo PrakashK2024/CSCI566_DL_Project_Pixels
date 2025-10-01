@@ -4,9 +4,104 @@ import time
 import os
 import tempfile
 import speech_recognition as sr
+header_lines = [
+    "📸 PixelSense:",
+    "Multimodal Transformer Framework for Interactive Image Understanding"
+]
 
-st.title("👥 Team Name: Pixels")
-st.header("📸 PixelSense: Multimodal Transformer Framework for Interactive Image Understanding")
+
+animated_words = "<br>".join(
+    [
+        " ".join(
+            "".join(f"<span style='--i:{i}'>{ch}</span>" for i, ch in enumerate(word))
+            for word in line.split(" ")
+        )
+        for line in header_lines
+    ]
+)
+
+
+st.markdown(
+    f"""
+    <style>
+ 
+    @keyframes zoomBounce {{
+      0% {{opacity:0; transform: scale(0.3) translateY(-50px);}}
+      60% {{opacity:1; transform: scale(1.1) translateY(10px);}}
+      100% {{opacity:1; transform: scale(1) translateY(0);}}
+    }}
+
+  
+    @keyframes waveDrop {{
+      0% {{opacity:0; transform: translateY(-20px);}}
+      50% {{opacity:1; transform: translateY(5px);}}
+      100% {{opacity:1; transform: translateY(0);}}
+    }}
+
+    .title-container {{
+      text-align: center;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }}
+
+    .pixels span {{
+      display:inline-block;
+      animation: rainbow 2s infinite;
+    }}
+
+    @keyframes rainbow {{
+      0% {{color: #ff4b4b;}}
+      25% {{color: #ffa64b;}}
+      50% {{color: #4bff4b;}}
+      75% {{color: #4b9bff;}}
+      100% {{color: #ff4b4b;}}
+    }}
+
+    .pixels span:nth-child(1) {{animation-delay:0s;}}
+    .pixels span:nth-child(2) {{animation-delay:0.2s;}}
+    .pixels span:nth-child(3) {{animation-delay:0.4s;}}
+    .pixels span:nth-child(4) {{animation-delay:0.6s;}}
+    .pixels span:nth-child(5) {{animation-delay:0.8s;}}
+    .pixels span:nth-child(6) {{animation-delay:1.0s;}}
+
+    .puzzle-header {{
+      display: inline-block;
+      text-align: center;
+      line-height: 1.5;         
+      word-spacing: 0.3rem;    
+      letter-spacing: 0.03rem;  
+      white-space: normal;      
+      max-width: 90%;
+    }}
+
+    /* Apply animations to lines */
+    .puzzle-header span {{
+      display:inline-block;
+      opacity:0;
+    }}
+    .puzzle-header span:nth-child(-n+14) {{
+      animation: zoomBounce 0.8s forwards;
+    }}
+    .puzzle-header span:nth-child(n+15) {{
+      animation: waveDrop 0.6s forwards;
+      animation-delay: calc(var(--i) * 0.05s);
+    }}
+    </style>
+
+    <div class="title-container">
+      👥 Team Name:
+      <span class="pixels">
+        <span>P</span><span>i</span><span>x</span><span>e</span><span>l</span><span>s</span>
+      </span>
+    </div>
+
+    <h2 style='text-align:center; font-weight:600;' class='puzzle-header'>
+      {animated_words}
+    </h2>
+    """,
+    unsafe_allow_html=True
+)
 
 
 if "temp_dir" not in st.session_state:
