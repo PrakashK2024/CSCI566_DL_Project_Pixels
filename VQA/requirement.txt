@@ -28,3 +28,4 @@ pytesseract
 faiss-cpu
 modal-client
 gTTS
+huggingface_hub
